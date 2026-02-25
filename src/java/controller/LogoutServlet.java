@@ -1,30 +1,27 @@
 package controller;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 
-/**
- * Handles GET /logout → invalidates session and redirects to login page
- */
-@WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
 public class LogoutServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
+        HttpSession session = req.getSession(false);
         if (session != null) {
             session.invalidate();
         }
-        response.sendRedirect(request.getContextPath() + "/login");
+
+        // Luôn về landing page, dù đang ở đâu
+        resp.sendRedirect(req.getContextPath() + "/");
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        doGet(request, response);
+        doGet(req, resp);
     }
 }

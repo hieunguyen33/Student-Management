@@ -1,4 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!-- Thêm vào đầu danh sách nav, trước Dashboard -->
+<li class="nav-item">
+    <a class="nav-link" href="<%= request.getContextPath() %>/">
+        <i class="bi bi-house me-2"></i>Trang Chủ
+    </a>
+</li>
 <%
     String loggedInUser = (String) session.getAttribute("loggedInUser");
     Integer totalStudents = (Integer) request.getAttribute("totalStudents");
@@ -101,6 +107,11 @@
         <i class="bi bi-mortarboard-fill me-2"></i>StudentMgmt
     </div>
     <ul class="nav flex-column mt-2">
+        <li class="nav-item">
+            <a class="nav-link" href="<%= request.getContextPath() %>/">
+                <i class="bi bi-house me-2"></i>Trang Chủ
+            </a>
+        </li>
         <li class="nav-item">
             <a class="nav-link active" href="<%= request.getContextPath() %>/dashboard">
                 <i class="bi bi-speedometer2 me-2"></i>Dashboard

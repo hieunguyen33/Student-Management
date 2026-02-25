@@ -1,5 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.Student" %>
+<!-- Thêm vào đầu danh sách nav, trước Dashboard -->
+<li class="nav-item">
+    <a class="nav-link" href="<%= request.getContextPath() %>/">
+        <i class="bi bi-house me-2"></i>Trang Chủ
+    </a>
+</li>
 <%
     Student student      = (Student) request.getAttribute("student");
     String  formAction   = (String)  request.getAttribute("formAction");
@@ -43,6 +49,11 @@
 <!-- Sidebar -->
 <nav class="sidebar pt-2">
     <div class="brand"><i class="bi bi-mortarboard-fill me-2"></i>StudentMgmt</div>
+    <li class="nav-item">
+        <a class="nav-link" href="<%= request.getContextPath() %>/">
+            <i class="bi bi-house me-2"></i>Trang Chủ
+        </a>
+    </li>
     <ul class="nav flex-column mt-2">
         <li class="nav-item"><a class="nav-link" href="<%= ctx %>/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" href="<%= ctx %>/students?action=list"><i class="bi bi-people me-2"></i>Sinh Viên</a></li>
