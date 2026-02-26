@@ -70,5 +70,23 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
+    <!-- Subject Management -->
+    <servlet>
+        <servlet-name>SubjectServlet</servlet-name>
+        <servlet-class>controller.SubjectServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SubjectServlet</servlet-name>
+        <url-pattern>/subjects</url-pattern>
+    </servlet-mapping>
 
+<!-- Grade Management -->
+    <servlet>
+        <servlet-name>GradeServlet</servlet-name>
+        <servlet-class>controller.GradeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GradeServlet</servlet-name>
+        <url-pattern>/grades</url-pattern>
+    </servlet-mapping>
 </web-app>

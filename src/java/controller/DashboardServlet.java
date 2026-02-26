@@ -28,6 +28,7 @@ public class DashboardServlet extends HttpServlet {
         req.setAttribute("totalStudents", total);
         req.setAttribute("totalNam",  nam);
         req.setAttribute("totalNu",   nu);
+        req.setAttribute("activeMenu", "dashboard");
         req.getRequestDispatcher("/dashboard.jsp").forward(req, resp);
     }
 }

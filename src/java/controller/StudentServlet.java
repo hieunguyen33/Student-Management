@@ -10,7 +10,7 @@ import java.util.List;
 
 public class StudentServlet extends HttpServlet {
 
-    private static final int PAGE_SIZE = 8; // Số sinh viên mỗi trang
+    private static final int PAGE_SIZE = 8;
     private StudentDAO dao;
 
     @Override
@@ -45,25 +45,21 @@ public class StudentServlet extends HttpServlet {
         }
     }
 
-    // ── LIST với pagination ───────────────────────────────────────────────────
     private void list(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
-        int page      = parsePage(req.getParameter("page"));
-        int total     = dao.countAll();
-        int totalPages= (int) Math.ceil((double) total / PAGE_SIZE);
+        int page       = parsePage(req.getParameter("page"));
+        int total      = dao.countAll();
+        int totalPages = (int) Math.ceil((double) total / PAGE_SIZE);
         if (page > totalPages && totalPages > 0) page = totalPages;
 
         List<Student> students = dao.getStudentsPaged(page, PAGE_SIZE);
-
         setPaginationAttributes(req, students, total, page, totalPages, "", "");
+        req.setAttribute("activeMenu", "students"); // ← active
         req.getRequestDispatcher("/student-list.jsp").forward(req, resp);
     }
 
-    // ── SEARCH với pagination ─────────────────────────────────────────────────
     private void search(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         String keyword = safe(req.getParameter("keyword"));
         String field   = safe(req.getParameter("field"));
         if (field.isEmpty()) field = "name";
@@ -74,10 +70,10 @@ public class StudentServlet extends HttpServlet {
         if (page > totalPages && totalPages > 0) page = totalPages;
 
         List<Student> students = dao.getStudentsPagedSearch(page, PAGE_SIZE, field, keyword);
-
         setPaginationAttributes(req, students, total, page, totalPages, keyword, field);
-        req.setAttribute("keyword", keyword);
-        req.setAttribute("field",   field);
+        req.setAttribute("keyword",    keyword);
+        req.setAttribute("field",      field);
+        req.setAttribute("activeMenu", "students"); // ← active
         req.getRequestDispatcher("/student-list.jsp").forward(req, resp);
     }
 
@@ -85,6 +81,7 @@ public class StudentServlet extends HttpServlet {
             throws ServletException, IOException {
         req.setAttribute("student",    new Student());
         req.setAttribute("formAction", "add");
+        req.setAttribute("activeMenu", "students"); // ← active
         req.getRequestDispatcher("/student-form.jsp").forward(req, resp);
     }
 
@@ -96,6 +93,7 @@ public class StudentServlet extends HttpServlet {
             if (s == null) { list(req, resp); return; }
             req.setAttribute("student",    s);
             req.setAttribute("formAction", "edit");
+            req.setAttribute("activeMenu", "students"); // ← active
             req.getRequestDispatcher("/student-form.jsp").forward(req, resp);
         } catch (NumberFormatException e) {
             resp.sendRedirect(req.getContextPath() + "/students?action=list");
@@ -110,18 +108,16 @@ public class StudentServlet extends HttpServlet {
             req.setAttribute("errorMessage", err);
             req.setAttribute("student",    s);
             req.setAttribute("formAction", "add");
+            req.setAttribute("activeMenu", "students"); // ← active
             req.getRequestDispatcher("/student-form.jsp").forward(req, resp);
             return;
         }
         if (dao.addStudent(s)) {
             req.getSession().setAttribute("flashMessage", "✅ Thêm sinh viên thành công!");
-            resp.sendRedirect(req.getContextPath() + "/students?action=list");
         } else {
-            req.setAttribute("errorMessage", "Thêm thất bại. Vui lòng kiểm tra log.");
-            req.setAttribute("student",    s);
-            req.setAttribute("formAction", "add");
-            req.getRequestDispatcher("/student-form.jsp").forward(req, resp);
+            req.getSession().setAttribute("flashError", "Thêm thất bại. Vui lòng kiểm tra log.");
         }
+        resp.sendRedirect(req.getContextPath() + "/students?action=list");
     }
 
     private void edit(HttpServletRequest req, HttpServletResponse resp)
@@ -134,18 +130,16 @@ public class StudentServlet extends HttpServlet {
                 req.setAttribute("errorMessage", err);
                 req.setAttribute("student",    s);
                 req.setAttribute("formAction", "edit");
+                req.setAttribute("activeMenu", "students"); // ← active
                 req.getRequestDispatcher("/student-form.jsp").forward(req, resp);
                 return;
             }
             if (dao.updateStudent(s)) {
                 req.getSession().setAttribute("flashMessage", "✅ Cập nhật thành công!");
-                resp.sendRedirect(req.getContextPath() + "/students?action=list");
             } else {
-                req.setAttribute("errorMessage", "Cập nhật thất bại.");
-                req.setAttribute("student",    s);
-                req.setAttribute("formAction", "edit");
-                req.getRequestDispatcher("/student-form.jsp").forward(req, resp);
+                req.getSession().setAttribute("flashError", "Cập nhật thất bại.");
             }
+            resp.sendRedirect(req.getContextPath() + "/students?action=list");
         } catch (NumberFormatException e) {
             resp.sendRedirect(req.getContextPath() + "/students?action=list");
         }
@@ -185,10 +179,10 @@ public class StudentServlet extends HttpServlet {
         if (!s.getEmail().matches("^[\\w.+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"))
             return "Định dạng email không hợp lệ.";
         if (dao.isEmailTaken(s.getEmail(), excludeId))
-            return "Email '" + s.getEmail() + "' đã được sử dụng bởi sinh viên khác.";
+            return "Email '" + s.getEmail() + "' đã được sử dụng.";
         if (!s.getPhone().isEmpty() &&
             !s.getPhone().matches("^(0[3|5|7|8|9])+([0-9]{8})$"))
-            return "Số điện thoại không hợp lệ (phải là số VN 10 chữ số, bắt đầu 03/05/07/08/09).";
+            return "Số điện thoại không hợp lệ (10 chữ số VN, bắt đầu 03/05/07/08/09).";
         return null;
     }
 
